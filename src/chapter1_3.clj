@@ -255,3 +255,88 @@
 (println ((cubic 1 2 3) x))
 
 ; exercise 1.41
+(defn double_
+  "Takes a procedure of one argument as argument and returns a procedure that applies the original procedure twice."
+  [f]
+  (fn [x]
+    (f (f x))))
+
+(println
+  ((double_ inc) 0))
+
+(println
+  (((double_ double_) inc) 0))
+
+(println (((double_ (double_ double_)) inc) 0))
+
+;1
+;(double (double ((double (double x))))) -> returns 16
+;(double (double x)) -> returns 4
+
+; exercise 1.42
+(defn compose
+  [f g]
+  (fn [x]
+    (f (g x))))
+
+(assert (= 49 ((compose square inc) 6)))
+
+; exercise 1.43
+; assume n > 0
+(defn repeated
+  [f n]
+  (fn [x]
+    (loop [i 1
+           result (f x)]
+      (if (= i n)
+        result
+        (recur (inc i) (f result))))))
+
+(println ((repeated square 2) 5))
+(assert (= 625 ((repeated square 2) 5)))
+
+; exercise 1.44
+
+(defn average-smooth
+  [f x]
+  (let [dx 0.00001]
+    (/ (+ (f (- x dx))
+          (f x)
+          (f (+ x dx)))
+     3)))
+
+(defn smooth
+  [f]
+  (fn [x]
+    (average-smooth f x)))
+
+(println ((smooth cube) 3))
+
+(defn n-fold-smooth
+  [f n]
+  ((repeated smooth n) f))
+
+(println ((n-fold-smooth cube 5) 3))
+
+; exercise 1.46
+(defn iterative-improvement
+  [good-enough? improve]
+  (fn [guess x]
+    (loop [guess guess
+           x x]
+      (if (good-enough? guess x)
+        guess
+        (recur (improve guess x) x)))))
+(defn improve
+  [guess x]
+  (average guess (/ x guess)))
+
+(defn good-enough?
+  [guess x]
+  (< (abs (- (square guess) x)) 0.001))
+
+(defn new-sqrt
+  [x]
+  ((iterative-improvement good-enough? improve) 1. x))
+
+(println (new-sqrt 4))
