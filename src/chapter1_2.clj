@@ -80,3 +80,17 @@
     (p (sine (/ angle 3.0)))))
 
 (sine 12.15)
+
+
+; GCD of two integers a and b is defined to be
+; the largest integer that divides both a and b with no remainder
+
+(defn gcd
+  [a b]
+  (if (= b 0)
+    a
+    (gcd b (rem a b))))
+
+(assert (= 1 (gcd 4 3)))
+(assert (= 2 (gcd 4 2)))
+(assert (= 1 (gcd 5 2)))
