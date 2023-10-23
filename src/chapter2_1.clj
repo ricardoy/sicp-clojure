@@ -163,3 +163,59 @@
       midpoint (midpoint-segment segment)]
   (assert (= 1 (numer (x-point midpoint))))
   (assert (= 2 (numer (y-point midpoint)))))
+
+; two representations for rectangle
+; 1. all 4 points
+; 2. the diagonal and the length of one of its sides
+
+; intervals
+
+(defn make-interval
+  [a b]
+  (if (< a b)
+    (cons a [b])
+    (cons b [a])))
+
+(defn upper-bound
+  [x]
+  (first x))
+
+(defn lower-bound
+  [x]
+  (last x))
+
+(defn add-interval
+  [x y]
+  (make-interval (+ (lower-bound x) (lower-bound y))
+                 (+ (upper-bound x) (upper-bound y))))
+
+(defn mul-interval
+  [x y]
+  (let [p1 (* (lower-bound x) (lower-bound y))
+        p2 (* (lower-bound x) (upper-bound y))
+        p3 (* (upper-bound x) (lower-bound y))
+        p4 (* (upper-bound x) (upper-bound y))]
+    (make-interval (min p1 p2 p3 p4)
+                   (max p1 p2 p3 p4))))
+
+(defn div-interval
+  [x y]
+  (if (or (= 0 (upper-bound y))
+          (= 0 (lower-bound y)))
+    (throw "Division by zero")
+    (mul-interval
+      x
+      (make-interval (/ 1.0 (upper-bound y))
+                     (/ 1.0 (lower-bound y))))))
+
+
+
+(defn sub-interval
+  "evaluates interval x - interval y"
+  [x y]
+  (make-interval (- (lower-bound x) (upper-bound y))
+                 (- (upper-bound x) (lower-bound y))))
+
+
+(println (sub-interval (make-interval 4 5)
+                       (make-interval 2 3)))
