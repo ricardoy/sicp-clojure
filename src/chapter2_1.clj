@@ -219,3 +219,18 @@
 
 (println (sub-interval (make-interval 4 5)
                        (make-interval 2 3)))
+
+(defn same-parity
+  [x & l]
+  (let [parity (odd? x)]
+    (loop [result [x]
+           l l]
+      (if (empty? l)
+        result
+        (recur (if (= parity (odd? (first l)))
+                 (conj result (first l))
+                 result)
+               (rest l))))))
+
+(assert (= [1] (same-parity 1)))
+(assert (= [1 3] (same-parity 1 2 3)))
